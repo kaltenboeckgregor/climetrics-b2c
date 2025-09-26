@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Header(){
   return (
     <header className="sticky top-0 z-40 glass border-b">
       <div className="mx-auto max-w-6xl h-16 px-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/logo-climetrics.svg" alt="Climetrics" className="h-6 w-6" />
+          <Image src="/logo-climetrics.svg" alt="Climetrics" width={24} height={24} priority />
           <span className="font-semibold tracking-tight">Climetrics</span>
           <span className="ml-2 text-xs px-2 py-0.5 border rounded-full">B2C Beta</span>
         </Link>
