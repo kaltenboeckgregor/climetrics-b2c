@@ -24,3 +24,48 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* === Climetrics CI tokens === */
+:root{
+  --brand-emerald:#0EA5A0; /* Primär */
+  --brand-cyan:#06B6D4;    /* Akzent  */
+  --brand-graphite:#111827;/* Text    */
+  --brand-cloud:#F8FAFC;   /* BG      */
+}
+
+/* Small helpers */
+.btn {
+  @apply inline-flex items-center justify-center rounded-2xl px-4 py-2 font-medium transition;
+}
+.btn-primary {
+  background: var(--brand-emerald);
+  color: white;
+}
+.btn-primary:hover { @apply opacity-90; }
+
+.btn-quiet {
+  @apply border border-slate-200 bg-white;
+}
+.btn-quiet:hover { @apply bg-slate-50; }
+
+.card {
+  @apply border rounded-2xl bg-white p-5 shadow-sm;
+}
+
+.glass {
+  @apply bg-white/70 backdrop-blur;
+}
+
+:root{
+  --brand-emerald:#0EA5A0; /* Primär */
+  --brand-cyan:#06B6D4;    /* Akzent  */
+  --brand-graphite:#111827;/* Text    */
+  --brand-cloud:#F8FAFC;   /* BG      */
+}
+.btn{ @apply inline-flex items-center justify-center rounded-2xl px-4 py-2 font-medium transition; }
+.btn-primary{ background:var(--brand-emerald); color:white; }
+.btn-primary:hover{ @apply opacity-90; }
+.btn-quiet{ @apply border border-slate-200 bg-white; }
+.btn-quiet:hover{ @apply bg-slate-50; }
+.card{ @apply border rounded-2xl bg-white p-5 shadow-sm; }
+.glass{ @apply bg-white/70 backdrop-blur; }
