@@ -13,8 +13,9 @@ export default function Header(){
         </Link>
         <nav className="hidden sm:flex items-center gap-3 text-sm">
           <Link className="px-3 py-1.5 rounded-xl hover:bg-slate-50" href="/dashboard">Dashboard</Link>
-          <a className="px-3 py-1.5 rounded-xl hover:bg-slate-50" href="#faq">FAQ</a>
-          <Link className="btn btn-quiet" href="/dashboard">Live-Demo</Link>
+          <Link className="px-3 py-1.5 rounded-xl hover:bg-slate-50" href="/#faq">FAQ</Link>
+          <Link className="btn btn-quiet" href="/demo">Live-Demo</Link>
+          <Link className="px-3 py-1.5 rounded-xl hover:bg-slate-50" href="/impressum">Impressum</Link>
         </nav>
       </div>
     </header>

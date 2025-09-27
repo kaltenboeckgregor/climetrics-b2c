@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import { computeReport, encodeId, type InputPayload } from "@/lib/compute";
@@ -10,11 +10,17 @@ import ScoreRing from "@/components/ScoreRing";
 import TrendChart from "@/components/TrendChart";
 import ChallengeList from "@/components/ChallengeList";
 
+type Leader = { rank: number; place: string; score: number };
+
 export default function Dashboard() {
+  // Eingaben (passen zu InputPayload)
   const [address, setAddress] = useState("");
   const [horizon, setHorizon] = useState(2050);
-  const [homeType, setHomeType] = useState<"apartment" | "house" | "multi">("apartment");
+  const [homeType, setHomeType] = useState<"apartment" | "house" | "multi">(
+    "apartment"
+  );
 
+  // Vorschau aus aktuellen Eingaben
   const previewInput: InputPayload = {
     address: address || "Wien 1070",
     horizon,
@@ -22,19 +28,37 @@ export default function Dashboard() {
   };
   const preview = computeReport(previewInput);
 
+  // Gamification-Status
   const g =
     typeof window !== "undefined"
       ? getGamestate()
       : { xp: 0, streak: 0, badges: [], reports: 0, lastDay: "" };
 
+  // Leaderboard (Demo)
+  const [leaders, setLeaders] = useState<Leader[]>([]);
+  useEffect(() => {
+    fetch("/api/leaderboard")
+      .then((r) => r.json())
+      .then((d) => setLeaders((d?.items as Leader[]) ?? []))
+      .catch(() => setLeaders([]));
+  }, []);
+
+  // Submit mit Adress-Validierung
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!address || address.trim().length < 3) {
+      alert(
+        "Bitte gib eine gültige Adresse oder PLZ ein, damit der Report erstellt werden kann."
+      );
+      return;
+    }
+
     const input: InputPayload = { address, horizon, homeType };
     const id = encodeId(input);
     const report = computeReport(input);
 
     bumpGamification(50, report.score >= 70 ? "Resilience Starter" : undefined);
-
     saveLocal(`climetrics:report:${id}`, report);
 
     window.location.href = `/report/${id}`;
@@ -43,6 +67,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[var(--brand-cloud)] text-[var(--brand-graphite)]">
       <Header />
+
       <main className="mx-auto max-w-6xl px-4 py-10 space-y-8">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Formular */}
@@ -97,7 +122,7 @@ export default function Dashboard() {
             </div>
           </form>
 
-          {/* Live-Vorschau */}
+          {/* Live-Vorschau + Gamification */}
           <div className="card space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">Live-Vorschau</h3>
@@ -107,6 +132,7 @@ export default function Dashboard() {
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
+              {/* dynamischer Ring zeigt preview.score */}
               <ScoreRing score={preview.score} />
               <div className="grid grid-cols-2 gap-3">
                 <Tile k={`${preview.metrics.heatDays}`} t="Hitzetage >35°C" />
@@ -133,6 +159,45 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Leaderboard */}
+        <section className="mt-10">
+          <h2 className="font-semibold mb-2">🏆 Leaderboard (Demo)</h2>
+          <div className="overflow-x-auto border rounded-xl bg-white">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-slate-500">
+                  <th className="py-2 px-3">#</th>
+                  <th className="px-3">Ort</th>
+                  <th className="px-3">Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaders.map((r) => (
+                  <tr key={r.rank} className="border-t">
+                    <td className="py-2 px-3">{r.rank}</td>
+                    <td className="px-3">{r.place}</td>
+                    <td className="px-3">{r.score}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Coming Soon Box */}
+        <section className="mt-6">
+          <div className="card">
+            <div className="text-sm font-semibold mb-2">🚧 Coming Soon</div>
+            <ul className="list-disc pl-5 text-sm text-slate-700 space-y-1">
+              <li>Adresse-Autovervollständigung (Map-Picker)</li>
+              <li>Risiko-Heatmap & Straßen-Level-Hinweise</li>
+              <li>Maßnahmen-Konfigurator mit Kosten/Nutzen</li>
+              <li>Vergleich: Zwei Adressen nebeneinander</li>
+              <li>Account-Sync (Reports auf allen Geräten)</li>
+            </ul>
+          </div>
+        </section>
       </main>
     </div>
   );
